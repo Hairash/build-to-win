@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sticks game</title>
+  <script src="../static/login.js"></script>
+</head>
+<body>
+  <h1>Login</h1>
+  <form action="/login" method="POST" id="login-form">
+    <input name="username" type="text" placeholder="enter your name" required>
+    <input name="password" type="password" placeholder="enter your password" required>
+    <button type="submit">Login</button>
+  </form>
+  <h1>Register</h1>
+  <form action="/register" method="POST" id="registration-form">
+    <input name="username" type="text" placeholder="enter your name" required>
+    <input name="password" type="password" placeholder="enter your password" required>
+    <button type="submit">Register</button>
+  </form>
+  <a href="/game">Go to game</a>
+</body>
+</html>

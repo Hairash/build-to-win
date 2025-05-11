@@ -1,0 +1,135 @@
+/* Field */
+div.field {
+    user-select: none;
+}
+
+div.cell-row {
+    display: flex;
+    justify-content: center;
+    user-select: none;
+}
+
+span.cell {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    background-color: #e0e0e0;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid #aaa;
+    margin: 2px;
+    user-select: none;
+}
+
+.cell .building {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+}
+
+.cell .building.red {
+    border: 2px solid red;
+}
+
+.cell .building.blue {
+    border: 2px solid blue;
+}
+
+.cell .building.green {
+    border: 2px solid green;
+}
+
+.cell .building.yellow {
+    border: 2px solid yellow;
+}
+
+/* Player */
+.player-label.red {
+    color: red;
+}
+
+.player-label.blue {
+    color: blue;
+}
+
+.player-label.green {
+    color: green;
+}
+
+.player-label.yellow {
+    color: yellow;
+}
+
+/* Actions */
+div#buildings-panel {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    user-select: none;
+}
+
+div.action {
+    display: inline-flex;
+    width: 100px;
+    height: 100px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px;
+    background-size: cover;
+    background-position: center;
+}
+
+div.action:hover {
+    background-color: #e0e0e0;
+    cursor: pointer;
+}
+
+div.action.selected {
+    border: 5px solid #744423;
+}
+
+.building.sawmill {
+    background-image: url("sawmill.png");
+}
+
+.building.tower {
+    background-image: url("tower.png");
+}
+
+/* Resources */
+div#resources-panel {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    user-select: none;
+}
+
+div.resource {
+    display: inline-flex;
+    background-size: cover;
+    background-position: center;
+}
+
+div.resource-image {
+    width: 20px;
+    height: 20px;
+    background-size: cover;
+    background-position: center;
+}
+
+.wood {
+    background-image: url("wood.png");
+}
+
+.empty {
+    background-image: url("empty.png");
+}
+
+.dirt {
+    background-image: url("dirt.png");
+}

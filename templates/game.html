@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sticks game</title>
+  <script src="../static/game.js"></script>
+  <link href="../static/style.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet"/>
+</head>
+<body>
+  Welcome, <span id="player-name" class="player-label"></span>!<br>
+  <div id="lobby">
+    <h1>Wait for players...</h1>
+    <p>Players in lobby:</p>
+    <div id="lobby-players"></div>
+    <!-- Add join button -->
+    <button
+        id="start-game-btn"
+        class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+    >Start Game
+    </button>
+  </div>
+  <div id="game" style="display: none;">
+    <div id="field"></div>
+    <div id="buildings-panel">
+      <!-- TODO: Add buildings cost -->
+      <div id="sawmill-action" class="action building sawmill" data-type="sawmill"></div>
+      <div id="tower-action" class="action building tower" data-type="tower"></div>
+    </div>
+    <div id="resources-panel">
+      <div class="resource-image wood"></div>
+      <div id="wood-resource"></div>
+    </div>
+    <button
+        id="end-turn-btn"
+        class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+    >End Turn
+    </button>
+    <button
+        id="restart-game-btn"
+        class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+        style="display: none;"
+    >Restart game</button>
+    <div>
+      Current player: <span id="current-player" class="player-label"></span><br>
+    </div>
+  </div>
+</body>
+</html>
