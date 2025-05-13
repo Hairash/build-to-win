@@ -84,6 +84,7 @@ def game_data():
             'state': GameData.state,
             'players': GameData.players_queue if GameData.players_queue else list(GameData.players),
             'current_player': GameData.players_queue[GameData.current_player_idx] if GameData.players_queue else None,
+            'turn_ctr': GameData.turn_ctr,
         }
         if GameData.field:
             data.update(GameData.field.to_dict())
@@ -130,6 +131,9 @@ def build():
         if not GameData.field.is_enough_resources(player, building_type):
             return {'event': 'Not enough resources', 'success': False}
 
+        if GameData.turn_ctr < 2 and building_type == 'tower':
+            return {'event': 'Cannot build tower during first 2 turns', 'success': False}
+
         GameData.field.build(x, y, building_type, player)
         GameData.end_turn_ctr = 0
         if GameData.check_end_game():
@@ -147,6 +151,8 @@ def end_turn():
         GameData.players_queue[GameData.current_player_idx] == session['username']
     ):
         # TODO: Not allow to skip first turn
+        if GameData.turn_ctr < 1:
+            return {'event': 'Cannot skip first turn', 'success': False}
         GameData.end_turn_ctr += 1
         print(GameData.end_turn_ctr)
         if GameData.check_end_game():
@@ -223,5 +229,5 @@ def logout():
 
 # TODO: Change host
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
-    # app.run(port=5000)
+    # app.run(host='0.0.0.0', port=5000)
+    app.run(port=5000)

@@ -52,10 +52,12 @@ class Field:
         self.cells = []
         self.generate()
 
-        self.resources = {
-            player: {
-                RESOURCE_TYPES.WOOD: 5,
-            } for player in players
+        self.resources = self.generate_resources(players)
+
+    def to_dict(self):
+        return {
+            'field': [[cell.to_dict() for cell in row] for row in self.cells],
+            'resources': self.resources,
         }
 
     def generate(self):
@@ -69,11 +71,21 @@ class Field:
                     row.append(Cell(RESOURCE_TYPES.EMPTY))
             self.cells.append(row)
 
-    def to_dict(self):
-        return {
-            'field': [[cell.to_dict() for cell in row] for row in self.cells],
-            'resources': self.resources,
-        }
+
+    @staticmethod
+    def generate_resources(players):
+        resources = {}
+        cur_resource = 5
+        for i in range(len(players)):
+            player = players[i]
+            resources[player] = {
+                RESOURCE_TYPES.WOOD: cur_resource,
+            }
+            if i == 0:
+                cur_resource += 3
+            else:
+                cur_resource += 1
+        return resources
 
     def is_build_possible(self, x, y):
         if x < 0 or x >= self.size or y < 0 or y >= self.size:
