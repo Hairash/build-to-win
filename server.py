@@ -1,4 +1,6 @@
 import os
+import random
+
 from flask import Flask, request, session, render_template, redirect
 
 from flask_sqlalchemy import SQLAlchemy
@@ -20,8 +22,8 @@ class User(db.Model):
 with app.app_context():
     db.create_all()
 
-
 FIELD_SIZE = 10
+
 
 class GAME_STATES:
     LOBBY = 'lobby'
@@ -106,7 +108,8 @@ def current_user():
 def start_game():
     if 'username' in session and GameData.state == GAME_STATES.LOBBY:
         GameData.state = GAME_STATES.PLAYING
-        GameData.players_queue = list(GameData.players)  # TODO: Shuffle
+        GameData.players_queue = list(GameData.players)
+        random.shuffle(GameData.players_queue)
 
         GameData.field = Field(FIELD_SIZE, GameData.players_queue)
 
@@ -124,15 +127,19 @@ def build():
         x = int(request.json.get('x'))
         y = int(request.json.get('y'))
         if not GameData.field.is_build_possible(x, y):
-            return {'event': 'Cannot build here', 'success': False}
+            return {'event': 'Cannot build here', 'success': False, 'error': 'Cannot build here'}
 
         building_type = request.json.get('type')
         print(x, y, building_type)
         if not GameData.field.is_enough_resources(player, building_type):
-            return {'event': 'Not enough resources', 'success': False}
+            return {'event': 'Not enough resources', 'success': False, 'error': 'Not enough resources'}
 
         if GameData.turn_ctr < 2 and building_type == 'tower':
-            return {'event': 'Cannot build tower during first 2 turns', 'success': False}
+            return {
+                'event': 'Cannot build tower during first 2 turns',
+                'success': False,
+                'error': 'Cannot build tower during first 2 turns',
+            }
 
         GameData.field.build(x, y, building_type, player)
         GameData.end_turn_ctr = 0
@@ -140,9 +147,9 @@ def build():
             return {'event': 'Game over', 'success': True}
         GameData.end_turn()
         return {'event': 'Building placed', 'success': True}
-        # TODO: Add winning condition and start new game
 
-    return {'event': 'Wait for your turn', 'success': False}
+    return {'event': 'Wait for your turn', 'success': False, 'error': 'Wait for your turn'}
+
 
 @app.route('/end_turn', methods=['POST'])
 def end_turn():
@@ -150,9 +157,8 @@ def end_turn():
         'username' in session and GameData.state == GAME_STATES.PLAYING and
         GameData.players_queue[GameData.current_player_idx] == session['username']
     ):
-        # TODO: Not allow to skip first turn
         if GameData.turn_ctr < 1:
-            return {'event': 'Cannot skip first turn', 'success': False}
+            return {'event': 'Cannot skip first turn', 'success': False, 'error': 'Cannot skip first turn'}
         GameData.end_turn_ctr += 1
         print(GameData.end_turn_ctr)
         if GameData.check_end_game():
@@ -203,7 +209,7 @@ def login():
         session['username'] = username
         return {'event': 'Login successful', 'success': True}
 
-    return {'event': 'Login failed', 'success': False}
+    return {'event': 'Login failed', 'success': False, 'error': 'Invalid credentials'}
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -211,14 +217,19 @@ def register():
     username = request.form.get('username')
     password = request.form.get('password')
 
-    print(User.query.all())  # Not needed, just for debugging
+    print()
+    for user in User.query.all():
+        print(user.name)
     if User.query.filter_by(name=username).first():
-        return 'User already exists'
+        user = User.query.filter_by(name=username).first()
+        print(user)
+        print(user.name)
+        return {'event': 'Registration failed', 'success': False, 'error': 'User already exists'}
 
     new_user = User(name=username, password=password)
     db.session.add(new_user)
     db.session.commit()
-    return 'User registered successfully'
+    return {'event': 'Registration successful', 'success': True}
 
 
 @app.route('/logout', methods=['POST'])
@@ -227,7 +238,6 @@ def logout():
     session.pop('username', None)
 
 
-# TODO: Change host
 if __name__ == '__main__':
     # app.run(host='0.0.0.0', port=5000)
     app.run(port=5000)

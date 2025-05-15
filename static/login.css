@@ -1,0 +1,105 @@
+/* Base layout */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f9f4e8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.login-container {
+    max-width: 400px;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+/* Title */
+.login-title {
+    font-size: 28px;
+    color: #5e3d1c;
+    margin-bottom: 20px;
+}
+
+/* Card-style wrapper */
+.auth-card {
+    background-color: #fffaf2;
+    border: 2px solid #d2a060;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(120, 72, 25, 0.08);
+}
+
+/* Forms */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.auth-form input {
+    padding: 10px;
+    border: 1px solid #cba267;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.auth-form input:focus {
+    outline: none;
+    border-color: #a0662a;
+    box-shadow: 0 0 5px rgba(160, 102, 42, 0.3);
+}
+
+/* Buttons */
+.auth-btn {
+    background-color: #d18b00;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.auth-btn:hover {
+    background-color: #b07400;
+}
+
+/* Game link */
+.game-link {
+    display: inline-block;
+    margin-top: 10px;
+    color: #8b4513;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.game-link:hover {
+    text-decoration: underline;
+}
+
+.message-box {
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.message-box.success {
+    background-color: #dff5d8;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+}
+
+.message-box.error {
+    background-color: #ffe0e0;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+}

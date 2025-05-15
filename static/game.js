@@ -39,6 +39,10 @@ window.onload = function() {
   document.getElementById('restart-game-btn').addEventListener('click', sendRestartGame);
   // If user leaves the game, send the message to the server
   window.addEventListener('unload', sendLeaveGame);
+  document.getElementById('game-message').addEventListener('click', function() {
+    this.style.display = 'none';
+    this.classList.remove('fade-in');
+  });
 }
 
 
@@ -46,7 +50,9 @@ window.onload = function() {
 function startGame() {
   document.getElementById('lobby').style.display = 'none';
   document.getElementById('game').style.display = 'block'; // Show the game
-  document.getElementById('restart-game-btn').style.display = 'none';
+  document.getElementById('restart-game-container').style.display = 'none';
+  document.getElementById('game-message').style.display = 'none';
+  document.getElementById('game-message').classList.remove('fade-in');
 }
 
 function goToLobby() {
@@ -77,9 +83,9 @@ function outputPlayersInLobby(data) {
   const lobbyPlayersEl = document.getElementById('lobby-players');
   lobbyPlayersEl.innerHTML = ''; // Clear the list before updating
   data.players.forEach(player => {
-    const li = document.createElement('li');
-    li.textContent = player;
-    lobbyPlayersEl.appendChild(li);
+    const p = document.createElement('p');
+    p.textContent = player;
+    lobbyPlayersEl.appendChild(p);
   });
 }
 
@@ -194,7 +200,14 @@ function sendBuildingAction(action, x, y) {
     .then(response => response.json())
     .then(data => {
       console.log('Action response:', data);
-      // Handle the response from the server if needed
+      if (data.error) {
+        const errorMessage = document.getElementById('error-message');
+        errorMessage.textContent = data.error;
+        errorMessage.style.display = 'block';
+        setTimeout(() => {
+          errorMessage.style.display = 'none';
+        }, 3000);
+      }
     })
     .catch(error => console.error('Error:', error));
 }
@@ -206,7 +219,14 @@ function sendEndTurn() {
     .then(response => response.json())
     .then(data => {
       console.log('Turn ended successfully');
-      // Handle the response from the server if needed
+      if (data.error) {
+        const errorMessage = document.getElementById('error-message');
+        errorMessage.textContent = data.error;
+        errorMessage.style.display = 'block';
+        setTimeout(() => {
+          errorMessage.style.display = 'none';
+        }, 3000);
+      }
     })
     .catch(error => console.error('Error:', error));
 }
@@ -247,9 +267,12 @@ setInterval(function() {
         processGameData(data);
         if (data.state === GAME_STATES.END) {
           gameState = GAME_STATES.END;
-          alert(`Game Over! ${data.winner} wins!`);
+          const gameMessage = document.getElementById('game-message');
+          gameMessage.textContent = `Game Over! ${data.winner} wins!`;
+          gameMessage.style.display = 'block';
+          gameMessage.classList.add('fade-in');
           if (currentUser === data.winner) {
-            document.getElementById('restart-game-btn').style.display = 'block';
+            document.getElementById('restart-game-container').style.display = 'flex';
           }
         }
       }
