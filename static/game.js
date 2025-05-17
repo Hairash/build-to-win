@@ -11,7 +11,7 @@ const COLORS = [
   'red',
   'blue',
   'green',
-  'yellow',
+  'yellow',  // Yellow is not visible
   'purple',
   'orange',
   'pink',
@@ -28,7 +28,7 @@ const COLORS = [
 let playersColors = null;
 
 
-window.onload = function() {
+window.onload = function () {
   document.getElementById('start-game-btn').addEventListener('click', sendStartGame);
   document.getElementById('end-turn-btn').addEventListener('click', sendEndTurn);
   const actionButtons = document.getElementsByClassName('action building');
@@ -39,7 +39,8 @@ window.onload = function() {
   document.getElementById('restart-game-btn').addEventListener('click', sendRestartGame);
   // If user leaves the game, send the message to the server
   window.addEventListener('unload', sendLeaveGame);
-  document.getElementById('game-message').addEventListener('click', function() {
+  // TODO: Check this
+  document.getElementById('game-message').addEventListener('click', function () {
     this.style.display = 'none';
     this.classList.remove('fade-in');
   });
@@ -47,12 +48,36 @@ window.onload = function() {
 
 
 // ---- Game logic ----
-function startGame() {
+function initColors(players) {
+  playersColors = {};
+  for (let i = 0; i < players.length; i++) {
+    playersColors[players[i]] = COLORS[i];
+  }
+
+  if (currentUser in playersColors) {
+    document.getElementById('player-name').className = `player-label ${playersColors[currentUser]}`;
+  }
+}
+
+function updateGameStatus(data) {
+  const currentPlayerEl = document.getElementById('current-player');
+  currentPlayerEl.textContent = data.current_player;
+  currentPlayerEl.className = `player-label ${playersColors[data.current_player]}`;
+  if (currentUser in data.field.resources) {
+    document.getElementById('wood-resource').textContent = data.field.resources[currentUser].wood;
+  }
+}
+
+function startGame(data) {
   document.getElementById('lobby').style.display = 'none';
   document.getElementById('game').style.display = 'block'; // Show the game
   document.getElementById('restart-game-container').style.display = 'none';
   document.getElementById('game-message').style.display = 'none';
   document.getElementById('game-message').classList.remove('fade-in');
+
+  initColors(data.players);
+  createField(data.field.field);
+  updateGameStatus(data);
 }
 
 function goToLobby() {
@@ -89,31 +114,6 @@ function outputPlayersInLobby(data) {
   });
 }
 
-function processGameData(data) {
-  if (!playersColors) {
-    playersColors = {};
-    for (let i = 0; i < data.players.length; i++) {
-      playersColors[data.players[i]] = COLORS[i];
-    }
-    if (currentUser in playersColors) {
-      document.getElementById('player-name').className = `player-label ${playersColors[currentUser]}`;
-    }
-  }
-  const currentPlayerEl = document.getElementById('current-player');
-  currentPlayerEl.textContent = data.current_player;
-  currentPlayerEl.className = `player-label ${playersColors[data.current_player]}`;
-  if (currentUser in data.resources) {
-    document.getElementById('wood-resource').textContent = data.resources[currentUser].wood;
-  }
-  const fieldEl = document.getElementById('field');
-  if (fieldEl.children.length > 0) {
-    updateField(data.field);
-  }
-  else {
-    createField(data.field);
-  }
-}
-
 function createField(field) {
   const fieldEl = document.getElementById('field');
   for (let x = 0; x < field.length; x++) {
@@ -136,7 +136,6 @@ function createField(field) {
 }
 
 function updateField(field) {
-  const fieldEl = document.getElementById('field');
   for (let x = 0; x < field.length; x++) {
     const rowEl = document.getElementById(`row-${x}`);
     for (let y = 0; y < field[x].length; y++) {
@@ -147,14 +146,12 @@ function updateField(field) {
       if (cellData.building && buildingEl) {
         buildingEl.className = `building ${cellData.building.type} ${playersColors[cellData.building.player]}`;
         buildingEl.dataset.player = cellData.building.player;
-      }
-      else if (cellData.building) {
+      } else if (cellData.building) {
         const newBuildingEl = document.createElement('span');
         newBuildingEl.className = `building ${cellData.building.type} ${playersColors[cellData.building.player]}`;
         newBuildingEl.dataset.player = cellData.building.player;
         cellEl.appendChild(newBuildingEl);
-      }
-      else if (!cellData.building && buildingEl) {
+      } else if (!cellData.building && buildingEl) {
         buildingEl.remove();
       }
     }
@@ -164,124 +161,74 @@ function updateField(field) {
 
 // ---- Send requests to server ----
 function sendStartGame() {
-  fetch('/start_game', {
-    method: 'POST',
-  })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Game started successfully');
-    })
-    .catch(error => console.error('Error:', error));
+  socket.emit('start_game');
 }
 
-function getCurrentUser() {
-  fetch('/current_user')
-    .then(response => response.json())
-    .then(data => {
-      currentUser = data.name;
-      const playerName = document.getElementById('player-name');
-      playerName.textContent = data.name;
-    })
-    .catch(error => console.error('Error fetching current user:', error));
-}
-
-function sendBuildingAction(action, x, y) {
-  fetch('/build', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      type: selectedBuilding,
-      x: x,
-      y: y,
-    })
-  })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Action response:', data);
-      if (data.error) {
-        const errorMessage = document.getElementById('error-message');
-        errorMessage.textContent = data.error;
-        errorMessage.style.display = 'block';
-        setTimeout(() => {
-          errorMessage.style.display = 'none';
-        }, 3000);
-      }
-    })
-    .catch(error => console.error('Error:', error));
+function sendBuildingAction(buildingType, x, y) {
+  socket.emit('build', { type: buildingType, x: x, y: y });
 }
 
 function sendEndTurn() {
-  fetch('/end_turn', {
-    method: 'POST',
-  })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Turn ended successfully');
-      if (data.error) {
-        const errorMessage = document.getElementById('error-message');
-        errorMessage.textContent = data.error;
-        errorMessage.style.display = 'block';
-        setTimeout(() => {
-          errorMessage.style.display = 'none';
-        }, 3000);
-      }
-    })
-    .catch(error => console.error('Error:', error));
+  socket.emit('end_turn');
 }
 
 function sendRestartGame() {
-  fetch('/restart_game', {
-    method: 'POST',
-  })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Game restarted successfully');
-    })
-    .catch(error => console.error('Error:', error));
-}
-
-function sendLeaveGame() {
-  navigator.sendBeacon('/leave_game');
+  socket.emit('restart_game');
 }
 
 
 // ---- Start client ----
-getCurrentUser();
+const socket = io();
 
-setInterval(function() {
-  // TODO: Remove
-  if (!getDataLoop) return;
-  fetch('/game_data')
-    .then(response => response.json())
-    .then(data => {
-      if (gameState === GAME_STATES.LOBBY) {
-        outputPlayersInLobby(data);
-        if (data.state === GAME_STATES.PLAYING) {
-          gameState = GAME_STATES.PLAYING;
-          startGame();
-        }
-      }
-      else if (gameState === GAME_STATES.PLAYING) {
-        processGameData(data);
-        if (data.state === GAME_STATES.END) {
-          gameState = GAME_STATES.END;
-          const gameMessage = document.getElementById('game-message');
-          gameMessage.textContent = `Game Over! ${data.winner} wins!`;
-          gameMessage.style.display = 'block';
-          gameMessage.classList.add('fade-in');
-          if (currentUser === data.winner) {
-            document.getElementById('restart-game-container').style.display = 'flex';
-          }
-        }
-      }
-      else if (gameState === GAME_STATES.END) {
-        if (data.state === GAME_STATES.LOBBY) {
-          gameState = GAME_STATES.LOBBY;
-          goToLobby();
-        }
-      }
-    })
-    .catch(error => console.error('Error fetching players:', error));
-}, 100);
+socket.on('connected', (data) => {
+  console.log('Connected to server');
+  currentUser = data.name;
+  const playerName = document.getElementById('player-name');
+  playerName.textContent = data.name;
+});
+
+socket.on('players', (data) => {
+  console.log('Players:', data);
+  outputPlayersInLobby(data);
+});
+
+socket.on('game_started', (data) => {
+  console.log('Game started:', data);
+  gameState = GAME_STATES.PLAYING;
+  startGame(data);
+});
+
+socket.on('game_updated', (data) => {
+  console.log('Turn ended:', data);
+  updateField(data.field.field);
+  updateGameStatus(data);
+})
+
+socket.on('game_over', (data) => {
+  console.log('Game over:', data);
+  gameState = GAME_STATES.END;
+  document.getElementById('game-message').textContent = `Game Over! ${data.winner} wins!`;
+  document.getElementById('game-message').style.display = 'block';
+  document.getElementById('game-message').classList.add('fade-in');
+  if (currentUser in playersColors) {
+    document.getElementById('restart-game-container').style.display = 'flex';
+  }
+});
+
+socket.on('go_to_lobby', () => {
+  console.log('Going to lobby');
+  gameState = GAME_STATES.LOBBY;
+  goToLobby();
+});
+
+
+socket.on('error', (data) => {
+  console.error('Error:', data);
+  document.getElementById('error-message').textContent = data.error;
+  document.getElementById('error-message').style.display = 'block';
+  document.getElementById('error-message').classList.add('fade-in');
+  setTimeout(() => {
+    document.getElementById('error-message').style.display = 'none';
+    document.getElementById('error-message').classList.remove('fade-in');
+  }, 3000);
+});

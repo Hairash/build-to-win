@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>Build to win</title>
-  <script src="../static/game.js"></script>
-  <link href="../static/style.css" rel="stylesheet"/>
   <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet"/>
+  <link href="../static/style.css" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="../static/game.js"></script>
 </head>
 <body>
   <!-- TODO: Add turn counter -->
@@ -16,7 +17,6 @@
     <div id="lobby">
       <p id="players-in-lobby-label">Players in lobby:</p>
       <div id="lobby-players"></div>
-      <!-- TODO: Add join button -->
       <button
           id="start-game-btn"
           class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
@@ -33,6 +33,7 @@
               data-type="sawmill"
               title="Generates 1 wood for each tree nearby every turn"
           ></div>
+          <!-- Add note about 1 wood each turn -->
           <div class="building-cost">
             <div class="resource-image wood"></div>
             <div id="sawmill-cost" class="action-cost">3</div>

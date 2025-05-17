@@ -273,3 +273,17 @@ class Field:
         if turn_ctr < 1:
             return True
         return len(self.get_player_buildings(player, BUILDING_TYPES.SAWMILL)) > 0
+
+
+    def remove_player(self, player):
+        """
+        Remove the player from the game.
+        :param player:
+        :return:
+        """
+        # self.resources.pop(player, None)
+        for x in range(self.size):
+            for y in range(self.size):
+                cell = self.cells[x][y]
+                if cell.building and cell.building.player == player:
+                    cell.building = None

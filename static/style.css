@@ -289,7 +289,6 @@ div.resource-image {
     background-position: center;
 }
 
-/* TODO: Make trees */
 .resource-image.wood {
     background-image: url("wood.png");
 }
