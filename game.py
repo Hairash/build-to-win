@@ -8,8 +8,11 @@ class RESOURCE_TYPES:
 
 
 class BUILDING_TYPES:
-    SAWMILL = "sawmill"
-    TOWER = "tower"
+    SAWMILL = "sawmill"  # Generates wood
+    TOWER = "tower"  # Destroy all buildings around
+    LOG_CABIN = "log_cabin"  # Cut all the trees around
+    TAVERN = "tavern"  # Steals resources from other players
+    LODGE = "lodge"  # Adds trees around
 
 
 COSTS = {
@@ -18,6 +21,15 @@ COSTS = {
     },
     BUILDING_TYPES.TOWER: {
         RESOURCE_TYPES.WOOD: 10,
+    },
+    BUILDING_TYPES.LOG_CABIN: {
+        RESOURCE_TYPES.WOOD: 5,
+    },
+    BUILDING_TYPES.TAVERN: {
+        RESOURCE_TYPES.WOOD: 10,
+    },
+    BUILDING_TYPES.LODGE: {
+        RESOURCE_TYPES.WOOD: 7,
     },
 }
 
@@ -95,8 +107,8 @@ class Field:
             return False
         if cell.resource != RESOURCE_TYPES.EMPTY:
             return False
-        if self.get_buildings_around(x, y, _type=BUILDING_TYPES.TOWER):
-            return False
+        # if self.get_buildings_around(x, y, _type=BUILDING_TYPES.TOWER):
+        #     return False
         return True
 
     def is_enough_resources(self, player, building_type):
@@ -119,6 +131,28 @@ class Field:
         for x, y in sawmills:
             wood_income += self.count_resources_around(x, y, RESOURCE_TYPES.WOOD)
         self.resources[player][RESOURCE_TYPES.WOOD] += wood_income
+
+    def update_field_resources(self, player):
+        pass
+        # If there is some free space near the lodge, add a tree there
+        # lodges = self.get_player_buildings(player, BUILDING_TYPES.LODGE)
+        # for x, y in lodges:
+        #     # Check if there is a free space around the lodge
+        #     empty_cells = []
+        #     for i in range(x - 1, x + 2):
+        #         for j in range(y - 1, y + 2):
+        #             if i == x and j == y:
+        #                 continue
+        #             if i < 0 or i >= self.size or j < 0 or j >= self.size:
+        #                 continue
+        #             cell = self.cells[i][j]
+        #             if cell.resource == RESOURCE_TYPES.EMPTY and cell.building is None:
+        #                 empty_cells.append((i, j))
+        #     if empty_cells:
+        #         new_tree = random.choice(empty_cells)
+        #         cell = self.cells[new_tree[0]][new_tree[1]]
+        #         cell.resource = RESOURCE_TYPES.WOOD
+        #         self.resources[player][RESOURCE_TYPES.WOOD] += 1
 
     def get_player_buildings(self, player=None, _type=None):
         """
@@ -237,6 +271,50 @@ class Field:
                     if cell.resource == RESOURCE_TYPES.EMPTY:
                         cell.resource = RESOURCE_TYPES.DIRT
 
+        elif building_type == BUILDING_TYPES.LOG_CABIN:  # Cut all the trees around
+            print("LOG CABIN")
+            for i in range(x - 1, x + 2):
+                for j in range(y - 1, y + 2):
+                    if i == x and j == y:
+                        continue
+                    if i < 0 or i >= self.size or j < 0 or j >= self.size:
+                        continue
+                    cell = self.cells[i][j]
+                    print(cell)
+                    if cell.resource == RESOURCE_TYPES.WOOD:
+                        print("Cutting tree")
+                        cell.resource = RESOURCE_TYPES.EMPTY
+                        self.resources[player][RESOURCE_TYPES.WOOD] += 2
+
+        elif building_type == BUILDING_TYPES.TAVERN:  # Steal half of all wood from the richest player nearby
+            buildings_around = self.get_buildings_around(x, y)
+            richest_player = None
+            richest_resources = -1
+            for i, j in buildings_around:
+                cell = self.cells[i][j]
+                if cell.building and cell.building.player != player:
+                    resources = self.resources[cell.building.player][RESOURCE_TYPES.WOOD]
+                    if resources > richest_resources:
+                        richest_resources = resources
+                        richest_player = cell.building.player
+            if richest_player:
+                stolen_resources = int(richest_resources / 2)
+                self.resources[richest_player][RESOURCE_TYPES.WOOD] -= stolen_resources
+                self.resources[player][RESOURCE_TYPES.WOOD] += stolen_resources
+
+        elif building_type == BUILDING_TYPES.LODGE:  # Convert all the dirt around to wood
+            for i in range(x - 1, x + 2):
+                for j in range(y - 1, y + 2):
+                    if i == x and j == y:
+                        continue
+                    if i < 0 or i >= self.size or j < 0 or j >= self.size:
+                        continue
+                    cell = self.cells[i][j]
+                    if cell.resource == RESOURCE_TYPES.DIRT:
+                        cell.resource = RESOURCE_TYPES.WOOD
+                        # self.resources[player][RESOURCE_TYPES.WOOD] += 1
+
+
     def is_end_game(self, players, turn_ctr, end_turn_ctr=0):
         """
         Check if the game is over.
@@ -272,7 +350,7 @@ class Field:
         """
         if turn_ctr < 1:
             return True
-        return len(self.get_player_buildings(player, BUILDING_TYPES.SAWMILL)) > 0
+        return len(self.get_player_buildings(player)) - len(self.get_player_buildings(player, BUILDING_TYPES.TOWER)) > 0
 
 
     def remove_player(self, player):

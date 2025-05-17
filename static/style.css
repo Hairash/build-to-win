@@ -263,6 +263,18 @@ div.action.selected {
     background-image: url("tower.png");
 }
 
+.building.log_cabin {
+    background-image: url("log cabin.png");
+}
+
+.building.tavern {
+    background-image: url("tavern.png");
+}
+
+.building.lodge {
+    background-image: url("lodge.png");
+}
+
 /* Resources */
 div#resources-panel {
 

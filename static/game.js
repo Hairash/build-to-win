@@ -37,8 +37,6 @@ window.onload = function () {
     actionButtons[i].addEventListener('click', handleActionClick);
   }
   document.getElementById('restart-game-btn').addEventListener('click', sendRestartGame);
-  // If user leaves the game, send the message to the server
-  window.addEventListener('unload', sendLeaveGame);
   // TODO: Check this
   document.getElementById('game-message').addEventListener('click', function () {
     this.style.display = 'none';
@@ -141,7 +139,7 @@ function updateField(field) {
     for (let y = 0; y < field[x].length; y++) {
       const cellData = field[x][y];
       const cellEl = document.getElementById(`cell-${x}-${y}`);
-      cellEl.classList.add(cellData.resource);
+      cellEl.className = `cell ${cellData.resource}`;
       const buildingEl = cellEl.querySelector('.building');
       if (cellData.building && buildingEl) {
         buildingEl.className = `building ${cellData.building.type} ${playersColors[cellData.building.player]}`;
