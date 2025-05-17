@@ -55,6 +55,7 @@ class GameData:
             if cls.current_player_idx == 0:
                 cls.turn_ctr += 1
         cls.field.update_resources(cls.players_queue[cls.current_player_idx])
+        cls.field.update_field_resources(cls.players_queue[cls.current_player_idx])
 
     @classmethod
     def check_end_game(cls):
@@ -180,6 +181,7 @@ def handle_build(data):
             return
 
         GameData.field.build(x, y, building_type, player)
+        print(GameData.field.to_dict())
         # TODO: Send build event with the specific cells to change
         socketio.emit('game_updated', {
             'current_player': GameData.players_queue[GameData.current_player_idx],
@@ -300,5 +302,5 @@ def logout():
 
 
 if __name__ == '__main__':
-    # socketio.run(app, host='0.0.0.0', port=8080)
-    socketio.run(app, port=8080, allow_unsafe_werkzeug=True)
+    socketio.run(app, host='0.0.0.0', port=8080, allow_unsafe_werkzeug=True)
+    # socketio.run(app, port=8080, allow_unsafe_werkzeug=True)
