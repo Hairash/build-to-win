@@ -130,6 +130,7 @@ function outputPlayersInLobby(data) {
 
 function createField(field) {
   const fieldEl = document.getElementById('field');
+  document.getElementById('field').innerHTML = '';
   for (let x = 0; x < field.length; x++) {
     const rowEl = document.createElement('div');
     rowEl.id = `row-${x}`;
