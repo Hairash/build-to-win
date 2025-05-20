@@ -255,6 +255,11 @@ div.action.selected {
     border: 5px solid #744423;
 }
 
+div.action.disabled {
+    filter: grayscale(100%);
+    cursor: not-allowed;
+}
+
 .building.sawmill {
     background-image: url("sawmill.png");
 }
@@ -354,6 +359,11 @@ div.resource-image {
 .end-turn-btn:hover {
     background-color: #b07400;
     cursor: pointer;
+}
+
+.end-turn-btn.disabled {
+    filter: grayscale(100%);
+    cursor: not-allowed;
 }
 
 #restart-game-container {

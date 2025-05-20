@@ -64,6 +64,13 @@ function updateGameStatus(data) {
   if (currentUser in data.field.resources) {
     document.getElementById('wood-resource').textContent = data.field.resources[currentUser].wood;
   }
+
+  if (data.current_player === currentUser ) {
+    enableButtons(data);
+  }
+  else {
+    disableButtons();
+  }
 }
 
 function startGame(data) {
@@ -156,6 +163,47 @@ function updateField(field) {
   }
 }
 
+function disableElement(element) {
+  element.disabled = true;
+  // Add class disabled only if it's not already there
+  if (!element.classList.contains('disabled')) {
+    element.classList.add('disabled');
+  }
+}
+
+function enableElement(element) {
+  element.disabled = false;
+  // Remove class disabled only if it's there
+  if (element.classList.contains('disabled')) {
+    element.classList.remove('disabled');
+  }
+}
+
+function disableButtons() {
+  const actionButtons = document.getElementsByClassName('action building');
+  for (let i = 0; i < actionButtons.length; i++) {
+    disableElement(actionButtons[i]);
+  }
+  disableElement(document.getElementById('end-turn-btn'));
+}
+
+function enableButtons(data) {
+  const actionButtons = document.getElementsByClassName('action building');
+  console.log(data.field.resources[currentUser].wood);
+  for (let i = 0; i < actionButtons.length; i++) {
+    console.log(actionButtons[i].dataset.cost);
+    if (data.field.resources[currentUser].wood >= actionButtons[i].dataset.cost) {
+      enableElement(actionButtons[i]);
+    }
+  }
+  if (data.turn_ctr >= 1) {
+    enableElement(document.getElementById('end-turn-btn'));
+  }
+  if (data.turn_ctr < 2) {
+    disableElement(document.querySelector('.action.building[data-type="tower"]'));
+  }
+}
+
 
 // ---- Send requests to server ----
 function sendStartGame() {
@@ -193,6 +241,7 @@ socket.on('players', (data) => {
 socket.on('game_started', (data) => {
   console.log('Game started:', data);
   gameState = GAME_STATES.PLAYING;
+  disableButtons();
   startGame(data);
 });
 
