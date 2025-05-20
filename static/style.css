@@ -38,6 +38,13 @@
     /*margin-bottom: 10px;*/
 }
 
+#game-start-condition-label {
+    font-style: italic;
+    font-size: 16px;
+    color: #5e3d1c;  /* dark brown */
+    margin-top: 20px;
+}
+
 #start-game-btn {
     padding: 6px 12px;
     background-color: #d18b00;
@@ -46,6 +53,11 @@
     border-radius: 8px;
     transition: background-color 0.2s;
     margin-top: 20px;
+}
+
+#start-game-btn.disabled {
+    filter: grayscale(100%);
+    cursor: not-allowed;
 }
 
 

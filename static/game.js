@@ -117,6 +117,15 @@ function outputPlayersInLobby(data) {
     p.textContent = player;
     lobbyPlayersEl.appendChild(p);
   });
+
+  if (data.players.length >= 2) {
+    document.getElementById('game-start-condition-label').style.display = 'none';
+    enableElement(document.getElementById('start-game-btn'));
+  }
+  else {
+    document.getElementById('game-start-condition-label').style.display = 'block';
+    disableElement(document.getElementById('start-game-btn'));
+  }
 }
 
 function createField(field) {

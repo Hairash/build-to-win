@@ -253,6 +253,7 @@ def handle_restart_game():
 @socketio.on('start_game')
 def handle_start_game():
     if 'username' in session and GameData.state == GAME_STATES.LOBBY:
+        # TODO: Check if there are enough players
         GameData.state = GAME_STATES.PLAYING
         GameData.players_queue = list(GameData.players)
         random.shuffle(GameData.players_queue)
