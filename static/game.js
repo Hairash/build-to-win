@@ -11,11 +11,7 @@ const COLORS = [
   'red',
   'blue',
   'green',
-  'yellow',  // Yellow is not visible
   'purple',
-  'orange',
-  'pink',
-  'brown',
   'cyan',
   'lime',
   'teal',
@@ -24,6 +20,10 @@ const COLORS = [
   'olive',
   'silver',
   'gold',
+  'brown',
+  'orange',
+  'pink',
+  'yellow',  // Yellow is not visible
 ]
 let playersColors = null;
 
@@ -42,6 +42,18 @@ window.onload = function () {
     this.style.display = 'none';
     this.classList.remove('fade-in');
   });
+
+  const toggleHelperButtons = document.getElementsByClassName('toggle-helper-btn');
+  for (let i = 0; i < toggleHelperButtons.length; i++) {
+    toggleHelperButtons[i].addEventListener('click', function () {
+      const helper = document.getElementById(this.dataset.helper);
+      if (helper.style.display === 'none' || helper.style.display === '') {
+        helper.style.display = 'flex';
+      } else {
+        helper.style.display = 'none';
+      }
+    });
+  }
 }
 
 
@@ -63,6 +75,7 @@ function updateGameStatus(data) {
   currentPlayerEl.className = `player-label ${playersColors[data.current_player]}`;
   if (currentUser in data.field.resources) {
     document.getElementById('wood-resource').textContent = data.field.resources[currentUser].wood;
+    document.getElementById('tavern-cost').textContent = data.field.resources[currentUser].wood;
   }
 
   if (data.current_player === currentUser ) {

@@ -29,15 +29,17 @@
       <div id="buildings-panel">
         <div class="building-block">
           <div
-              id="sawmill-action"
-              class="action building sawmill"
-              data-type="sawmill" data-cost="3"
+              id="sawmill-action" class="action building sawmill" data-type="sawmill" data-cost="3"
               title="Generates 1 wood for each tree nearby every turn"
           ></div>
+          <div id="sawmill-helper" class="action-help-text" style="display: none;">
+            Generates 1 wood for each tree nearby every turn
+          </div>
           <!-- Add note about 1 wood each turn -->
           <div class="building-cost">
             <div class="resource-image wood"></div>
             <div id="sawmill-cost" class="action-cost">3</div>
+            <div class="toggle-helper-btn" data-helper="sawmill-helper">?</div>
           </div>
         </div>
         <div class="building-block">
@@ -45,9 +47,13 @@
               id="tower-action" class="action building tower" data-type="tower" data-cost="10"
               title="Removes all the buildings nearby and turns all the cells into dirt"
           ></div>
+          <div id="tower-helper" class="action-help-text" style="display: none;">
+            Removes all the buildings nearby and turns all empty cells nearby into dirt
+          </div>
           <div class="building-cost">
             <div class="resource-image wood"></div>
             <div id="tower-cost" class="action-cost">10</div>
+            <div class="toggle-helper-btn" data-helper="tower-helper">?</div>
           </div>
         </div>
         <div class="building-block">
@@ -55,19 +61,27 @@
               id="log-cabin-action" class="action building log_cabin" data-type="log_cabin" data-cost="5"
               title="Cuts all the trees nearby and gives 2 wood for each tree"
           ></div>
+          <div id="log-cabin-helper" class="action-help-text" style="display: none;">
+            Cuts all the trees nearby and gives 2 wood for each tree
+          </div>
           <div class="building-cost">
             <div class="resource-image wood"></div>
             <div id="log-cabin-cost" class="action-cost">5</div>
+            <div class="toggle-helper-btn" data-helper="log-cabin-helper">?</div>
           </div>
         </div>
         <div class="building-block">
           <div
-              id="tavern-action" class="action building tavern" data-type="tavern" data-cost="10"
-              title="Steals half of the resources from the nearest player"
+              id="tavern-action" class="action building tavern" data-type="tavern" data-cost="0"
+              title="Steals half of the resources from the richest player nearby"
           ></div>
+          <div id="tavern-helper" class="action-help-text" style="display: none;">
+            Steals half of the resources from the richest player nearby
+          </div>
           <div class="building-cost">
             <div class="resource-image wood"></div>
             <div id="tavern-cost" class="action-cost">10</div>
+            <div class="toggle-helper-btn" data-helper="tavern-helper">?</div>
           </div>
         </div>
         <div class="building-block">
@@ -75,9 +89,13 @@
               id="lodge-action" class="action building lodge" data-type="lodge" data-cost="7"
               title="Turns all the dirt nearby into wood"
           ></div>
+          <div id="lodge-helper" class="action-help-text" style="display: none;">
+            Turns all the dirt nearby into wood
+          </div>
           <div class="building-cost">
             <div class="resource-image wood"></div>
             <div id="lodge-cost" class="action-cost">7</div>
+            <div class="toggle-helper-btn" data-helper="lodge-helper">?</div>
           </div>
         </div>
       </div>

@@ -26,7 +26,7 @@ COSTS = {
         RESOURCE_TYPES.WOOD: 5,
     },
     BUILDING_TYPES.TAVERN: {
-        RESOURCE_TYPES.WOOD: 10,
+        RESOURCE_TYPES.WOOD: 0,
     },
     BUILDING_TYPES.LODGE: {
         RESOURCE_TYPES.WOOD: 7,
@@ -121,6 +121,8 @@ class Field:
         cell = self.cells[x][y]
         cell.building = Building(player, building_type)
         self.resources[player][RESOURCE_TYPES.WOOD] -= COSTS[building_type][RESOURCE_TYPES.WOOD]
+        if building_type == BUILDING_TYPES.TAVERN:
+            self.resources[player][RESOURCE_TYPES.WOOD] = 0
         self.apply_effect(building_type, x, y, player)
 
     def update_resources(self, player):
